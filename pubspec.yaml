@@ -1,0 +1,16 @@
+name: project_cache_cleaner
+description: A sample command-line application.
+version: 1.0.0
+repository: https://github.com/ThanCoder/project_cache_cleaner_dart
+
+environment:
+  sdk: ^3.12.0
+
+# Add regular dependencies here.
+dependencies:
+  dart_core_extensions: ^0.3.0
+  cli_table: ^1.0.2
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6
