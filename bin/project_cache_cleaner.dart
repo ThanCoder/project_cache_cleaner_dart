@@ -5,12 +5,14 @@ import 'package:project_cache_cleaner/project_cache_cleaner.dart';
 import 'package:project_cache_cleaner/types.dart';
 
 void main(List<String> arguments) async {
+  final homePath = Platform.environment['HOME'];
+
   print('Scanning started...');
   final stopwatch = Stopwatch()..start();
 
   final projects = await scanProjectCacheFolder([
-    '/home/thancoder/projects',
-    '/home/thancoder/Documents',
+    '$homePath/projects',
+    '$homePath/Documents',
   ]);
 
   if (projects.isEmpty) {
