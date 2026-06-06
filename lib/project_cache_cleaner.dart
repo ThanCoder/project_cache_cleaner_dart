@@ -7,10 +7,12 @@ import 'package:project_cache_cleaner/utils.dart';
 
 Future<List<ProjectInfo>> scanProjectCacheFolder(
   List<String> rootPaths, {
-  bool getZeroThanSize = true,
+  bool includeEmptyCacheProject = false,
+  bool includeOtherCache = true,
 }) async {
   return await Isolate.run<List<ProjectInfo>>(() {
     final projects = <ProjectInfo>[];
+    final homePath = Platform.environment['HOME'];
 
     for (var path in rootPaths) {
       final queue = [Directory(path)];
@@ -46,6 +48,10 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                 projectType = ProjectType.python; // Python
               } else if (name == 'build.zig') {
                 projectType = ProjectType.zig; // ⚡ Zig Project အဖြစ် သတ်မှတ်မယ်
+              } else if (name == 'vcpkg.json') {
+                projectType = .cppVcpkg;
+              } else if (name == 'basic.csproj') {
+                projectType = .dotnet;
               }
               // folder
             } else if (entry.isDirectory) {
@@ -70,7 +76,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
             }
 
             // add project
-            if (getZeroThanSize && totalCacheSize > 0) {
+            if (!includeEmptyCacheProject && totalCacheSize > 0) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -79,7 +85,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                   size: totalCacheSize,
                 ),
               );
-            } else if (!getZeroThanSize) {
+            } else if (includeEmptyCacheProject) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -108,7 +114,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
               }
             }
 
-            if (getZeroThanSize && totalCacheSize > 0) {
+            if (!includeEmptyCacheProject && totalCacheSize > 0) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -117,7 +123,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                   size: totalCacheSize,
                 ),
               );
-            } else if (!getZeroThanSize) {
+            } else if (includeEmptyCacheProject) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -143,7 +149,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                 ); // target မဟုတ်တဲ့ တခြား folder တွေကို queue ထဲ ထည့်မယ်
               }
             }
-            if (getZeroThanSize && totalCacheSize > 0) {
+            if (!includeEmptyCacheProject && totalCacheSize > 0) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -152,7 +158,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                   size: totalCacheSize,
                 ),
               );
-            } else if (!getZeroThanSize) {
+            } else if (includeEmptyCacheProject) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -180,7 +186,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                 queue.add(folder);
               }
             }
-            if (getZeroThanSize && totalCacheSize > 0) {
+            if (!includeEmptyCacheProject && totalCacheSize > 0) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -189,7 +195,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                   size: totalCacheSize,
                 ),
               );
-            } else if (!getZeroThanSize) {
+            } else if (includeEmptyCacheProject) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -214,7 +220,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                 queue.add(folder);
               }
             }
-            if (getZeroThanSize && totalCacheSize > 0) {
+            if (!includeEmptyCacheProject && totalCacheSize > 0) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -223,7 +229,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                   size: totalCacheSize,
                 ),
               );
-            } else if (!getZeroThanSize) {
+            } else if (includeEmptyCacheProject) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -251,7 +257,7 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
               }
             }
 
-            if (getZeroThanSize && totalCacheSize > 0) {
+            if (!includeEmptyCacheProject && totalCacheSize > 0) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -260,7 +266,73 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
                   size: totalCacheSize,
                 ),
               );
-            } else if (!getZeroThanSize) {
+            } else if (includeEmptyCacheProject) {
+              projects.add(
+                ProjectInfo(
+                  name: currentDir.getName(),
+                  type: projectType,
+                  dirs: cacheFolders,
+                  size: totalCacheSize,
+                ),
+              );
+            }
+            continue;
+          }
+
+          // Cpp vcpkg
+          if (projectType == .cppVcpkg) {
+            for (var folder in subFolders) {
+              final dirName = folder.getName();
+              if (dirName == 'out') {
+                cacheFolders.add(folder.path);
+                totalCacheSize += getFolderSize(folder);
+              } else if (!dirName.startsWith('.')) {
+                queue.add(folder);
+              }
+            }
+            if (!includeEmptyCacheProject && totalCacheSize > 0) {
+              projects.add(
+                ProjectInfo(
+                  name: currentDir.getName(),
+                  type: projectType,
+                  dirs: cacheFolders,
+                  size: totalCacheSize,
+                ),
+              );
+            } else if (includeEmptyCacheProject) {
+              projects.add(
+                ProjectInfo(
+                  name: currentDir.getName(),
+                  type: projectType,
+                  dirs: cacheFolders,
+                  size: totalCacheSize,
+                ),
+              );
+            }
+            continue;
+          }
+
+          // Dotnet C#
+          if (projectType == .dotnet) {
+            for (var folder in subFolders) {
+              final dirName = folder.getName();
+              if (dirName == 'obj' || dirName == 'bin') {
+                cacheFolders.add(folder.path);
+                totalCacheSize += getFolderSize(folder);
+              } else if (!dirName.startsWith('.')) {
+                queue.add(folder);
+              }
+            }
+            if (!includeEmptyCacheProject && totalCacheSize > 0) {
+              projects.add(
+                ProjectInfo(
+                  name: currentDir.getName(),
+                  type: projectType,
+                  dirs: cacheFolders,
+                  size: totalCacheSize,
+                ),
+              );
+            } else if (includeEmptyCacheProject) {
               projects.add(
                 ProjectInfo(
                   name: currentDir.getName(),
@@ -283,6 +355,35 @@ Future<List<ProjectInfo>> scanProjectCacheFolder(
         }
       }
     }
+
+    if (!includeOtherCache) {
+      return projects;
+    }
+    // cache
+    projects.add(
+      ProjectInfo(
+        name: 'Go Cache',
+        type: .goCache,
+        dirs: [homePath!.join('.go_cache')],
+        size: getFolderSize(Directory(homePath.join('.go_cache'))),
+      ),
+    );
+    projects.add(
+      ProjectInfo(
+        name: 'Linux Cache',
+        type: .linuxCache,
+        dirs: [homePath.join('.cache')],
+        size: getFolderSize(Directory(homePath.join('.cache'))),
+      ),
+    );
+    projects.add(
+      ProjectInfo(
+        name: 'Gradle Cache',
+        type: .gradleCaches,
+        dirs: [homePath.join('.gradle').join('caches')],
+        size: getFolderSize(Directory(homePath.join('.gradle').join('caches'))),
+      ),
+    );
 
     return projects;
   });

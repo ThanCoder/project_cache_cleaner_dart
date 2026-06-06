@@ -1,6 +1,19 @@
 import 'package:dart_core_extensions/dart_core_extensions.dart';
 
-enum ProjectType { none, flutter, nodejs, rust, go, python, zig }
+enum ProjectType {
+  none,
+  flutter,
+  nodejs,
+  rust,
+  go,
+  python,
+  zig,
+  cppVcpkg,
+  dotnet,
+  goCache,
+  linuxCache,
+  gradleCaches,
+}
 
 class ProjectInfo {
   final String name;
