@@ -18,7 +18,12 @@ ArgParser get appAargs {
   parser.addFlag('scan', abbr: 's', negatable: false, help: 'Scan Project');
 
   // help
-  parser.addFlag('help', abbr: 'h', negatable: false, help: 'Can Use Command.');
+  parser.addFlag(
+    'help',
+    abbr: 'h',
+    negatable: false,
+    help: 'You Can Use Command.',
+  );
 
   return parser;
 }
