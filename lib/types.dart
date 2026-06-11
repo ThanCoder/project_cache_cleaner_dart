@@ -9,6 +9,7 @@ enum ProjectType {
   python,
   zig,
   cppVcpkg,
+  cppCmake,
   dotnet,
   goCache,
   linuxCache,
@@ -17,20 +18,20 @@ enum ProjectType {
 
 class ProjectInfo {
   final String name;
-  final ProjectType type;
-  int size;
-  List<String> dirs;
+  final String type;
+  int totalCacheSize;
+  List<String> cacheFolders;
   ProjectInfo({
     required this.name,
     required this.type,
-    this.size = 0,
-    required this.dirs,
+    this.totalCacheSize = 0,
+    required this.cacheFolders,
   });
 
-  String get sizeLable => size.fileSizeLabel();
+  String get totalCacheSizeLable => totalCacheSize.fileSizeLabel();
 
   @override
   String toString() {
-    return 'ProjectInfo(name: $name, type: ${type.name}, size: $size, dirs: $dirs)';
+    return 'ProjectInfo(name: $name, type: $type, totalCacheSize: $totalCacheSize, cacheFolders: $cacheFolders)';
   }
 }
