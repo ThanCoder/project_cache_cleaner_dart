@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_core_extensions/dart_core_extensions.dart';
-import 'package:project_cache_cleaner/types.dart';
+import 'package:project_cache_cleaner/core/models/project_info.dart';
 
 // 📦 Method 1: Delete all caches at once
 void deleteAllCaches(List<ProjectInfo> projects) {

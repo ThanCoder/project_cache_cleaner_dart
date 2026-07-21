@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:dart_core_extensions/dart_core_extensions.dart';
-import 'package:project_cache_cleaner/types.dart';
-import 'package:project_cache_cleaner/utils.dart';
+import 'package:project_cache_cleaner/core/models/project_info.dart';
+import 'package:project_cache_cleaner/core/utils.dart';
 
 abstract class BaseScanner {
   String get projectType;
@@ -28,14 +28,13 @@ abstract class BaseScanner {
     if (!includeEmptyCacheProject && totalSize == 0) return null;
 
     return ProjectInfo(
-      name: currentDir.getName(),
+      name: '${currentDir.parent.getName()}/${currentDir.getName()}',
       type: projectType,
       cacheFolders: cacheFolders,
       totalCacheSize: totalSize,
     );
   }
 }
-
 
 abstract class BaseSystemCacheScanner {
   String get cacheName;
@@ -46,13 +45,17 @@ abstract class BaseSystemCacheScanner {
 
   ProjectInfo? process(String homePath) {
     // path တွေကို စနစ်တကျ ဆက်ဖို့ uri သို့မဟုတ် standard path extension သုံးနိုင်ပါတယ်
-    final targetPath = Directory(homePath).uri.resolve(relativePath).toFilePath();
+    final targetPath = Directory(
+      homePath,
+    ).uri.resolve(relativePath).toFilePath();
     final dir = Directory(targetPath);
 
     if (!dir.existsSync()) return null;
 
     final size = getFolderSize(dir);
-    if (size == 0) return null; // System cache ကိုတော့ ပုံမှန်အားဖြင့် အလွတ်ဆို မပြချင်လို့ပါ
+    if (size == 0) {
+      return null;
+    }
 
     return ProjectInfo(
       name: cacheName,

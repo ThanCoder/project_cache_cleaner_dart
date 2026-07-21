@@ -1,0 +1,15 @@
+enum ProjectType {
+  none,
+  flutter,
+  nodejs,
+  rust,
+  go,
+  python,
+  zig,
+  cppVcpkg,
+  cppCmake,
+  dotnet,
+  goCache,
+  linuxCache,
+  gradleCaches,
+}

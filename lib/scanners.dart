@@ -1,4 +1,4 @@
-import 'package:project_cache_cleaner/scanner/base_scanner.dart';
+import 'package:project_cache_cleaner/core/scanner/base_scanner.dart';
 
 class FlutterScanner extends BaseScanner {
   @override

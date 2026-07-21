@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:cli_table/cli_table.dart';
 import 'package:dart_core_extensions/dart_core_extensions.dart';
-import 'package:project_cache_cleaner/scanner/base_scanner.dart';
-import 'package:project_cache_cleaner/scanner/scanners.dart';
-import 'package:project_cache_cleaner/scanner/system_scanners.dart';
-import 'package:project_cache_cleaner/types.dart';
-import 'package:project_cache_cleaner/utils.dart';
+import 'package:project_cache_cleaner/core/models/project_info.dart';
+import 'package:project_cache_cleaner/core/scanner/base_scanner.dart';
+import 'package:project_cache_cleaner/scanners.dart';
+import 'package:project_cache_cleaner/core/scanner/system_scanners.dart';
+import 'package:project_cache_cleaner/core/utils.dart';
 
 class ProjectCacheScanner {
   final bool includeEmptyCacheProject;
@@ -48,6 +48,7 @@ class ProjectCacheScanner {
       print("Scanner Is Empty!!!");
       return;
     }
+
     for (var path in rootPaths) {
       final queue = [Directory(path)];
 
@@ -129,6 +130,8 @@ class ProjectCacheScanner {
       print('\n✨ No cleanable cache projects found.');
       return;
     }
+
+    projectInfoList.sortSize();
 
     final table = Table(header: ["Index", "Name", "Type", 'Size']);
     int allSize = 0;
