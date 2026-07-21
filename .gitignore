@@ -3,3 +3,4 @@
 .dart_tool/
 bin/*.exe
 bin/pcc
+*.exe
