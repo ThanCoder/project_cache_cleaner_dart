@@ -24,6 +24,8 @@ abstract class BaseScanner {
         totalSize += getFolderSize(folder);
       }
     }
+    // cache size 1mb အေက်ဆိုရင် မထည့်ဘူး
+    if (totalSize < (1024 * 1024)) return null;
     //
     if (!includeEmptyCacheProject && totalSize == 0) return null;
 
@@ -56,6 +58,8 @@ abstract class BaseSystemCacheScanner {
     if (size == 0) {
       return null;
     }
+    // cache size 1mb အေက်ဆိုရင် မထည့်ဘူး
+    if (size < (1024 * 1024)) return null;
 
     return ProjectInfo(
       name: cacheName,
