@@ -4,3 +4,4 @@
 bin/*.exe
 bin/pcc
 *.exe
+bin/project_cache_cleaner.exe

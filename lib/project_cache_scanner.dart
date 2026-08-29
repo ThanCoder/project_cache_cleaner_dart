@@ -6,16 +6,18 @@ import 'package:dart_core_extensions/dart_core_extensions.dart';
 import 'package:project_cache_cleaner/core/models/project_info.dart';
 import 'package:project_cache_cleaner/core/scanner/base_scanner.dart';
 import 'package:project_cache_cleaner/scanners.dart';
-import 'package:project_cache_cleaner/core/scanner/system_scanners.dart';
+import 'package:project_cache_cleaner/system_scanners.dart';
 import 'package:project_cache_cleaner/core/utils.dart';
 
 class ProjectCacheScanner {
-  final bool includeEmptyCacheProject;
-  final bool includeOtherCache;
   ProjectCacheScanner({
     required this.includeEmptyCacheProject,
-    required this.includeOtherCache,
+    required this.systemCacheOnly,
+    required this.projectCacheOnly,
   });
+  final bool includeEmptyCacheProject;
+  final bool systemCacheOnly;
+  final bool projectCacheOnly;
 
   final List<BaseScanner> scannerList = [
     FlutterScanner(),
@@ -33,6 +35,7 @@ class ProjectCacheScanner {
     GradleCacheScanner(),
     GoCacheScanner(),
     DartPubCacheScanner(),
+    DartServerCacheScanner(),
   ];
 
   List<String> get scannerTypes =>
@@ -44,10 +47,24 @@ class ProjectCacheScanner {
   final List<ProjectInfo> projectInfoList = [];
 
   Future<void> scan(List<String> rootPaths) async {
+    if (systemCacheOnly) {
+      await _scanSystemCache();
+      return;
+    }
+    if (projectCacheOnly) {
+      await _scanProjectCache(rootPaths);
+      return;
+    }
+    await _scanProjectCache(rootPaths);
+    await _scanSystemCache();
+  }
+
+  Future<void> _scanProjectCache(List<String> rootPaths) async {
     if (scannerList.isEmpty) {
       print("Scanner Is Empty!!!");
       return;
     }
+    print('\nWill Scan Project Types: ${scannerTypes.join(', ')}');
 
     for (var path in rootPaths) {
       final queue = [Directory(path)];
@@ -110,16 +127,22 @@ class ProjectCacheScanner {
         }
       }
     }
-
-    await _scanSystemCache();
   }
 
   Future<void> _scanSystemCache() async {
+    if (systemScannerList.isEmpty) {
+      print("System Scanner Is Empty!!!");
+      return;
+    }
+
+    print('Will Scan System Caches: ${systemScannerTypes.join(', ')} \n');
+
     final homePath = Platform.environment['HOME'];
-    if (!includeOtherCache && homePath != null) return;
+    if (homePath == null) return;
     for (var sysScanner in systemScannerList) {
-      final info = sysScanner.process(homePath!);
+      final info = sysScanner.process(homePath);
       if (info != null) {
+        print('Scanned: ${info.name}');
         projectInfoList.add(info);
       }
     }

@@ -39,3 +39,14 @@ class DartPubCacheScanner extends BaseSystemCacheScanner {
   @override
   String get relativePath => '.pub-cache';
 }
+
+class DartServerCacheScanner extends BaseSystemCacheScanner {
+  @override
+  String get cacheName => 'Dart Server Cache';
+
+  @override
+  String get projectType => 'DartServerCache';
+
+  @override
+  String get relativePath => '.dartServer';
+}

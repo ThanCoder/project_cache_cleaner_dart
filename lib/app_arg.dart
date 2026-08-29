@@ -3,10 +3,17 @@ import 'package:args/args.dart';
 ArgParser get appAargs {
   final parser = ArgParser();
   parser.addFlag(
-    'other-cache',
+    'system-cache-only',
     abbr: 'c', // စာလုံးတစ်လုံးတည်းပဲ သုံးရပါမယ် (ဥပမာ 'c' သို့မဟုတ် 'o')
     negatable: false, // true/false ကို --no- အနေနဲ့ မသုံးချင်လို့ false ထားတာပါ
-    help: 'Include Other Cache (default=false)',
+    help: 'System Cache Only (default=false)',
+  );
+
+  parser.addFlag(
+    'project-cache-only',
+    abbr: 'p',
+    negatable: false,
+    help: 'Project Cache Only (default=false)',
   );
   parser.addFlag(
     'include-empty-cache-project',
