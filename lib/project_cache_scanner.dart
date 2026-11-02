@@ -166,7 +166,7 @@ class ProjectCacheScanner {
     }
     print('\n');
     print(table);
-    print('\nScanning finished in ${elapsedTime.autoTimeLabel()}\n');
+    print('\nScanning finished in ${elapsedTime.formatTimeLable()}\n');
     print('All Size: ${allSize.fileSizeLabel()}\n');
 
     showPromptForDeletion();
